@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
-              titleMedium:
-                  TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+              titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w100),
             )),
         home: const HomeScreen());
