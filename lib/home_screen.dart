@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mangareader/components.dart';
 import 'package:mangareader/model/manga.dart';
+import 'package:mangareader/under_construction_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,12 +16,16 @@ class HomeScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notification_add_outlined),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                return const UnderConstructionScreen();
+              }));
+            },
+            icon: const Icon(Icons.notifications),
           )
         ],
       ),
-      body: Padding(
+      body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,46 +35,16 @@ class HomeScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 32),
-            SearchAnchor(
-              builder: (BuildContext context, SearchController controller) {
-                return SearchBar(
-                  controller: controller,
-                  padding: const MaterialStatePropertyAll<EdgeInsets>(
-                      EdgeInsets.symmetric(horizontal: 16.0)),
-                  onTap: () {
-                    controller.openView();
-                  },
-                  onChanged: (_) {
-                    controller.openView();
-                  },
-                  leading: const Icon(Icons.search_outlined),
-                );
-              },
-              suggestionsBuilder:
-                  (BuildContext context, SearchController controller) {
-                return [];
-              },
-            ),
-            const SizedBox(height: 32),
             Text(
               'Trending Today',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            Container(
-              height: 260,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: trendingMangaList.map((manga) {
-                  return Container(
-                    padding: EdgeInsets.only(right: 8),
-                    child: MangaCard(
-                      manga: manga,
-                    ),
-                  );
-                }).toList(),
-              ),
-            )
+            const TrendingMangaSection(),
+            const SizedBox(height: 32),
+            const Expanded(
+              child: AllMangaSection(),
+            ),
           ],
         ),
       ),
@@ -76,43 +52,130 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class MangaCard extends StatelessWidget {
-  final Manga manga;
-
-  const MangaCard({Key? key, required this.manga}) : super(key: key);
+class TrendingMangaSection extends StatelessWidget {
+  const TrendingMangaSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: () {},
-      child: Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      height: 260,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: trendingMangaList.map((manga) {
+          return Container(
+            padding: const EdgeInsets.only(right: 8),
+            child: MangaCard(
+              manga: manga,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class AllMangaSection extends StatefulWidget {
+  const AllMangaSection({super.key});
+
+  @override
+  State<AllMangaSection> createState() => _AllMangaSectionState();
+}
+
+class _AllMangaSectionState extends State<AllMangaSection> {
+  int selected = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              height: 200,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: FadeInImage.assetNetwork(
-                  placeholder: 'images/placeholder_img.png',
-                  image: manga.imageUrl,
-                  fit: BoxFit.contain,
-                ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selected = 0;
+                });
+              },
+              child: Text(
+                'Latest Update',
+                style: selected == 0
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              manga.name,
-              style: Theme.of(context).textTheme.titleMedium,
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selected = 1;
+                });
+              },
+              child: Text(
+                'Most Popular',
+                style: selected == 1
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
-            Text(
-              "by ${manga.author}",
-              style: Theme.of(context).textTheme.bodyMedium,
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selected = 2;
+                });
+              },
+              child: Text(
+                'Newcomers',
+                style: selected == 2
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
           ],
         ),
-      ),
+        Expanded(
+          child: AllMangaList(
+            selected: selected,
+          ),
+        )
+      ],
     );
+  }
+}
+
+class AllMangaList extends StatelessWidget {
+  final int selected;
+
+  const AllMangaList({super.key, required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    switch (selected) {
+      case 0:
+        return ListView(
+          children: latestMangaList.map((manga) {
+            return MangaItem(
+              manga: manga,
+            );
+          }).toList(),
+        );
+
+      case 1:
+        return ListView(
+          children: popularMangaList.map((manga) {
+            return MangaItem(
+              manga: manga,
+            );
+          }).toList(),
+        );
+
+      default:
+        return ListView(
+          children: newMangaList.map((manga) {
+            return MangaItem(
+              manga: manga,
+            );
+          }).toList(),
+        );
+    }
   }
 }

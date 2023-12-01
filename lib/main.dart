@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mangareader/detail_screen.dart';
 import 'package:mangareader/home_screen.dart';
+import 'package:mangareader/model/manga.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,6 +30,8 @@ class MyApp extends StatelessWidget {
               titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w100),
             )),
-        home: const HomeScreen());
+        // home: const HomeScreen());
+        home: const HomeScreen()
+    );
   }
 }
